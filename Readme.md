@@ -29,7 +29,7 @@ docker run -v /local/folder/with/module_zip:/data aheadworks/m2test:2.2-7.1 unit
 ```
 
 Run static tests and collect test results in JUnit format
-
+    
 ```bash
 docker run -v /local/folder/with/module:/data -v /local/folder/for/results:/results aheadworks/m2test:2.2-7.1 static /data /results
 ```
