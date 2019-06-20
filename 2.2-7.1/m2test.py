@@ -66,7 +66,7 @@ def cli():
 
 @cli.command()
 @click.option('--severity', default=10, help='Severity level.')
-@click.option('--report', default="full", help='Report type.', type=click.Choice(["full", "xml", "checkstyle", "csv",
+@click.option('--report', default="junit", help='Report type.', type=click.Choice(["full", "xml", "checkstyle", "csv",
                                                                              "json", "junit", "emacs", "source",
                                                                              "summary", "diff", "svnblame", "gitblame",
                                                                              "hgblame", "notifysend"]))
@@ -76,7 +76,7 @@ def eqp(severity, report, path, report_file):
     """Run EQP tests for path"""
 
     with Extension(path) as e:
-        proc = subprocess.Popen([_(BASIC_PATH, 'magento-coding-standard/vendor/bin/phpcs'), e.path, '--standard=MEQP2',
+        proc = subprocess.Popen([_('/magento-coding-standard', 'vendor/bin/phpcs'), e.path, '--standard=Magento2',
                                  '--severity='+str(severity), '--extensions=php,phtml', '--report='+report],
                                 stdout=subprocess.PIPE
                                 )
@@ -86,7 +86,7 @@ def eqp(severity, report, path, report_file):
         with open(report_file, 'wb') as fp:
             fp.write(stdout)
     else:
-        click.echo(str(stdout))
+        click.echo(stdout)
         exit(proc.returncode)
 
 

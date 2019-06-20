@@ -15,6 +15,7 @@ RUN pip3 install click m2tools \
     && composer config repositories.magento composer https://repo.magento.com/ \
     && chmod u+x bin/magento \
     && composer install \
+    && composer create-project magento/magento-coding-standard --stability=dev /magento-coding-standard \
     && cd /tmp \
     && (curl https://codeload.github.com/magento/marketplace-tools/tar.gz/master | tar xvzp) \
     && mv /tmp/marketplace-tools-master/validate_m2_package.php /usr/local/bin/validate_m2_package.php \

@@ -40,6 +40,14 @@ Run unit tests and collect test results in JUnit format(result in `/local/folder
 docker run -v /local/folder/with/module:/data -v /local/folder/for/results:/results aheadworks/m2test:2.2-7.1 unit /data /results/unit-tests.xml
 ```
 
+### Running EQP(Magento coding standard) tests
+
+Run tests from [Magento coding standard](https://github.com/magento/magento-coding-standard) versus your extension
+
+```bash
+docker run -v /local/folder/with/module:/data aheadworks/m2test:2.3-7.2 eqp --report=full /data
+```
+
 ### Validating marketplace package
 
 ```bash
