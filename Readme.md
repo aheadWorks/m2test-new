@@ -15,7 +15,7 @@ Supported tests type:
 This image can be run agains folder with Magento 2 extension or zipped extension 
 
 ### Running unit and static tests
- 
+
 Run unit tests on extension folder against Magento 2.3 and PHP 7.2
 
 ```bash
