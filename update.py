@@ -18,12 +18,12 @@ files_to_copy = ("m2test.py", "entrypoint.sh")
 
 magento_versions = {
     "latest": {
-        "exact_version": "2.3.1",
+        "exact_version": "2.3.2",
         "php_versions": ["7.2"],
         "copy": files_to_copy
     },
     "2.3": {
-        "exact_version": "2.3.1",
+        "exact_version": "2.3.2",
         "php_versions": ["7.2", "7.1"],
         "copy": files_to_copy
     },
