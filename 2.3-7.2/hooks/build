@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+echo "==> Dockerfile: $DOCKERFILE_PATH"
+echo "==> Image name: $IMAGE_NAME"
+
+docker build --build-arg COMPOSER_AUTH="$COMPOSER_AUTH" -f $DOCKERFILE_PATH -t $IMAGE_NAME .

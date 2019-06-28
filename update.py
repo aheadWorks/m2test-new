@@ -3,7 +3,7 @@
 Run to generate Dockerfiles for desired PHP versions
 """
 from pathlib import Path
-from shutil import copyfile
+from shutil import copyfile, copytree
 from distutils.version import StrictVersion
 
 
@@ -14,7 +14,7 @@ head = """#
 #
 """
 
-files_to_copy = ("m2test.py", "entrypoint.sh")
+files_to_copy = ("m2test.py", "entrypoint.sh", "hooks")
 
 magento_versions = {
     "latest": {
@@ -58,4 +58,7 @@ with open('Dockerfile.template') as df:
 
             for p in Path().glob('*'):
                 if p.name in data['copy']:
-                    copyfile(p, path / p.name)
+                    if (p.is_file()):
+                        copyfile(p, path / p.name)
+                    else:
+                        copytree(p, path / p.name)
