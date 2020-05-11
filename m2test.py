@@ -4,12 +4,11 @@ import click
 from os.path import join as _
 import os
 import re
-from m2tools.extension import Extension
-import tempfile
-import shutil
+import json
+import pathlib
 
 
-BASIC_PATH = os.environ.get('MAGENTO_ROOT', '/var/www/html')
+BASIC_PATH = pathlib.Path(os.environ.get('MAGENTO_ROOT', '/var/www/html'))
 
 
 class cd:
@@ -25,43 +24,48 @@ class cd:
         os.chdir(self.savedPath)
 
 
+def remove_listeners(path):
+    with open(path) as phpunit_config:
+        data = phpunit_config.read()
+        reg = re.compile("<listeners.*</listeners>", re.S)
+        data = re.sub(reg, '', data)
+    with open(path, 'w') as phpunit_config:
+        phpunit_config.write(data)
+
+
+
 def install(path):
     """
     Install extension(s) to path from path or zip
     """
-    e = Extension()
-    temp_path = tempfile.mkdtemp()
 
-    try:
-        subprocess.check_call(["cp", "-R", path, temp_path])
-    
-        path = os.path.join(temp_path, os.path.basename(path))
-    
-        if os.path.isdir(path):
-            e.init_from_path(path)
-            repo_type = 'path'
-        else:
-            repo_type = 'artifact'
-            e.init_from_zip(path)
-            path = os.path.dirname(path)
-    
-        with cd(BASIC_PATH):
-            repo_name = re.sub(r'[^a-z0-9_]', '_', e.meta.name)
-            proc = subprocess.Popen(['composer', 'config', 'repositories.' + repo_name, repo_type, path])
-            proc.communicate()
-            ec1 = proc.returncode
-            proc = subprocess.Popen(['composer', 'require', '--prefer-dist', '{e.name}:{e.version}'.format(e=e.meta)])
-            proc.communicate()
-            ec2 = proc.returncode
-    finally:
-        shutil.rmtree(temp_path)
+    repo_type = 'path'
 
-    return os.path.join(BASIC_PATH, 'vendor', e.meta.name)
+    click.echo("Installing from %s" % path)
+
+    with open(path / 'composer.json') as f:
+        composer = json.load(f)
+        repo_name = re.sub(r'[^a-z0-9_]', '_', composer['name'])
+
+    with cd(BASIC_PATH):
+        proc = subprocess.Popen(['composer', 'config', 'repositories.' + repo_name, repo_type, path])
+        proc.communicate()
+        ec1 = proc.returncode
+        proc = subprocess.Popen(['composer', 'require', '--prefer-dist', '{e[name]}:{e[version]}'.format(e=composer)])
+        proc.communicate()
+        ec2 = proc.returncode
+
+        if ec1 or ec2:
+            raise click.ClickException("Failed to install extension")
+
+    return BASIC_PATH / 'vendor' / composer['name']
 
 
 @click.group()
 def cli():
-    pass
+    click.echo("Removing phpunit listeners")
+    remove_listeners(BASIC_PATH / 'dev' / 'tests' / 'static' / 'phpunit.xml.dist')
+    remove_listeners(BASIC_PATH / 'dev' / 'tests' / 'unit' / 'phpunit.xml.dist')
 
 
 @cli.command()
@@ -75,19 +79,18 @@ def cli():
 def eqp(severity, report, path, report_file):
     """Run EQP tests for path"""
 
-    with Extension(path) as e:
-        proc = subprocess.Popen([_('/magento-coding-standard', 'vendor/bin/phpcs'), e.path, '--standard=Magento2',
-                                 '--severity='+str(severity), '--extensions=php,phtml', '--report='+report],
-                                stdout=subprocess.PIPE
-                                )
-        stdout, stderr = proc.communicate()
+    proc = subprocess.Popen([_('/magento-coding-standard', 'vendor/bin/phpcs'), path, '--standard=Magento2',
+                             '--severity='+str(severity), '--extensions=php,phtml', '--report='+report],
+                            stdout=subprocess.PIPE
+                            )
+    stdout, stderr = proc.communicate()
 
     if report_file:
         with open(report_file, 'wb') as fp:
             fp.write(stdout)
     else:
         click.echo(stdout)
-        exit(proc.returncode)
+    exit(proc.returncode)
 
 
 @cli.command()
@@ -97,6 +100,7 @@ def eqp(severity, report, path, report_file):
 def unit(report, path, report_file):
     """Run unit tests for extension at path"""
 
+    path = pathlib.Path(path)
     path = install(path)
 
     options = [
@@ -107,12 +111,14 @@ def unit(report, path, report_file):
     if report_file:
         options += ['--log-%s' % report, report_file]
 
-    with Extension(path) as e:
-        proc = subprocess.Popen(options + [_(e.path, 'Test/Unit')])
-        proc.communicate()
+    proc = subprocess.Popen(options + [_(path, 'Test/Unit')])
+    proc.communicate()
 
     if not report_file:
         exit(proc.returncode)
+
+    exit(proc.returncode)
+
 
 
 @cli.command()
@@ -128,15 +134,16 @@ def static(report, path, report_path):
     :return:
     """
 
+    path = pathlib.Path(path)
+
     path = install(path)
 
-    with Extension(path) as e:
-        vendor_path = os.path.join(BASIC_PATH, 'vendor', e.meta.name)
+    with open(path / 'composer.json') as f:
+        composer = json.load(f)
 
-    path_changed_files = os.path.join(BASIC_PATH, 'dev', 'tests', 'static', 'testsuite', 'Magento', 'Test',
-                                          'Php', '_files', 'whitelist', 'common.txt')
+    path_changed_files = BASIC_PATH / 'dev' / 'tests' / 'static' / 'testsuite' / 'Magento' / 'Test' / 'Php' / '_files' / 'whitelist' / 'common.txt'
 
-    options = [os.path.join(BASIC_PATH, 'vendor/bin/phpunit'), '--configuration','dev/tests/static/phpunit.xml.dist']
+    options = [os.path.join(BASIC_PATH, 'vendor/bin/phpunit'), '--configuration', BASIC_PATH / 'dev/tests/static/phpunit.xml.dist']
 
     output_base = report_path or os.environ.get('RESULTS_DIR', '/results')
 
@@ -152,13 +159,14 @@ def static(report, path, report_path):
 
     # Collect php iles
     with open(path_changed_files, 'w') as fp:
-        for root, dirs, files in os.walk(vendor_path):
+        for root, dirs, files in os.walk(path):
 
             fp.writelines([os.path.relpath(os.path.abspath(os.path.join(root, f)), BASIC_PATH) + '\n' for f in files if os.path.splitext(f)[1] in (
                 '.php',
                 '.phtml'
             )])
 
+    exit_code = 0
     for fname, name in suites.items():
 
         outfile = os.path.join(output_base, fname + '.xml')
@@ -179,6 +187,10 @@ def static(report, path, report_path):
 
         with open(outfile, 'w') as f:
             f.write(data)
+
+        exit_code = proc.returncode or exit_code
+
+    exit(exit_code)
 
 @cli.command()
 @click.argument('path', type=click.Path(exists=True))

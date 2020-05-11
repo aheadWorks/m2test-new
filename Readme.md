@@ -12,7 +12,7 @@ Supported tests type:
 
 ## Usage
 
-This image can be run agains folder with Magento 2 extension or zipped extension 
+This image can be run agains folder with Magento 2 extension extension 
 
 ### Running unit and static tests
 
@@ -22,11 +22,6 @@ Run unit tests on extension folder against Magento 2.3 and PHP 7.2
 docker run -v /local/folder/with/module:/data aheadworks/m2test:2.3-7.2 unit /data
 ```
 
-Run unit tests for zipped extension(marketplace package) against latest released Magento 2.2 and PHP 7.1
-
-```bash
-docker run -v /local/folder/with/module_zip:/data aheadworks/m2test:2.2-7.1 unit /data/modulename.zip
-```
 
 Run static tests and collect test results in JUnit format
     

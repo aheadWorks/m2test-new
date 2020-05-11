@@ -11,7 +11,7 @@ ARG MAGENTO_VERSION="2.3.2"
 
 ARG COMPOSER_AUTH
 
-RUN pip3 install click m2tools \
+RUN pip3 install click \
     && cd /tmp \
     && curl https://codeload.github.com/magento/magento2/tar.gz/$MAGENTO_VERSION -o $MAGENTO_VERSION.tar.gz \
     && tar xvfp $MAGENTO_VERSION.tar.gz \
