@@ -200,9 +200,9 @@ def validate_m2_package(path):
     :param path:
     :return:
     """
-    proc = subprocess.Popen(['php', '-f', '/usr/local/bin/validate_m2_package.php', path])
-    proc.communicate()
-    exit(proc.returncode)
+    #proc = subprocess.Popen(['php', '-f', '/usr/local/bin/validate_m2_package.php', path])
+    #proc.communicate()
+    #exit(proc.returncode)
 
 if __name__ == '__main__':
     cli()
