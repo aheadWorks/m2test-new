@@ -51,7 +51,6 @@ RUN apk add --no-cache mariadb-client unzip openssh-server openssh-sftp-server \
 
 RUN ssh-keygen -A
 
-COPY id_rsa.pub /root/.ssh/id_rsa.pub
 COPY deploypipeline.py /deploypipline.py
 COPY m2test.py /m2test.py
 COPY assets/nginx.conf /etc/nginx/conf.d/default.conf
