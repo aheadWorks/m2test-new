@@ -16,27 +16,12 @@ head = """#
 #
 """
 
-files_to_copy = ("m2test.py", "entrypoint.sh", "hooks")
+files_to_copy = ("m2test.py", "deploypipeline.py", "entrypoint.sh", "hooks", "assets", "patch")
 
 magento_versions = {
-    "latest": {
-        "exact_version": "2.3.2",
-        "php_versions": ["7.2"],
-        "copy": files_to_copy
-    },
-    "2.3": {
-        "exact_version": "2.3.2",
-        "php_versions": ["7.2", "7.1"],
-        "copy": files_to_copy
-    },
-    "2.2": {
-        "exact_version": "2.2.9",
-        "php_versions": ["7.1", "7.0"],
-        "copy": files_to_copy
-    },
-    "2.1": {
-        "exact_version": "2.1.16",
-        "php_versions": ["7.0", "5.6"],
+    "test": {
+        "exact_version": "2.3.3",
+        "php_versions": ["7.4", "7.3", "7.2", "7.1"],
         "copy": files_to_copy
     }
 }
