@@ -21,6 +21,7 @@ ADD patch /.patch
 
 COPY assets/inject-ssh-keys.sh /inject-ssh-keys.sh
 
+RUN apk add --no-cache libzip-dev
 RUN apk add --no-cache zip zlib-dev
 RUN docker-php-ext-install zip
 RUN apk add --no-cache mariadb-client unzip openssh-server openssh-sftp-server \
