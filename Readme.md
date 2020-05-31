@@ -4,7 +4,7 @@ Image to run automatic tests against desired Magento 2 versions.
 
 Supported tests type:
 
-* unit
+* unit to different  php versions
 * static
 * [EQP](https://github.com/magento/marketplace-eqp) 
 * Validate marketplace package with [marketplace tools](https://github.com/magento/marketplace-tools)
@@ -48,3 +48,4 @@ docker run -v /local/folder/with/module:/data aheadworks/m2test:2.3-7.2 eqp --re
 ```bash
 docker run -v /local/folder/with/module_zip:/data aheadworks/m2test validate_m2_package /data/module-name.zip
 ```
+
