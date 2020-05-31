@@ -22,9 +22,7 @@ ADD patch /.patch
 COPY assets/inject-ssh-keys.sh /inject-ssh-keys.sh
 
 RUN apk add --no-cache zip zlib-dev
-RUN docker-php-ext-configure zip --with-zlib-dir=/usr/include
 RUN docker-php-ext-install zip
-RUN apk add --no-cache mariadb-client unzip openssh-server openssh-sftp-server \
     && VER=""\
     && rm -rf /var/www/html/* \
     && if [ "${MAGENTO_VERSION}" ] ; then\
