@@ -7,12 +7,19 @@ def removeDeployPipeline():
     readFile = open("bitbucket-pipelines.yml")
     lines = readFile.readlines()
     readFile.close()
-    firstInstructionIndex = lines.index('- step: &deployPipelines') - 1
-    lastInstructionIndex = lines.index('- python3 /deploypipline.py')
-    del lines[firstInstructionIndex:lastInstructionIndex]
-    firstIndex = lines.index('# copy this file to all modules') - 1
-    lastIndex = lines.index('- step: *deployPipelines')
+    for index, line in enumerate(lines):
+        if line.find('&deployPipelines') != -1:
+            firstInstructionIndex = index
+        elif line.find('deploypipeline.py') != -1:
+            lastInstructionIndex = index + 1
+        elif line.find('deploy-pipelines') != -1:
+            firstIndex = index
+        elif line.find('*deployPipelines') != -1:
+            lastIndex = index + 1
+    print(firstIndex)
+    print(lastIndex)
     del lines[firstIndex:lastIndex]
+    del lines[firstInstructionIndex:lastInstructionIndex]
     w = open("bitbucket-pipelines.yml", 'w')
     w.writelines([item for item in lines])
     w.close()
@@ -45,8 +52,7 @@ for item in repositories:
     if url.find('module') != -1:
         url_list.append(url)
 for url in url_list:
-    process = subprocess.Popen(['git', 'remote', 'set-url', '--add', '--push', 'origin', url]).communicate()
-    if url.find('module-boilerplate') != -1:
-        push()
+    if url.find('module-boilerplate') == -1:
+        process = subprocess.Popen(['git', 'remote', 'set-url', '--add', '--push', 'origin', url]).communicate()
 removeDeployPipeline()
 push()

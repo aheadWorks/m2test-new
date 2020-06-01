@@ -59,6 +59,7 @@ def install(path):
     with open(path / 'composer.json') as f:
         composer = json.load(f)
         repo_name = re.sub(r'[^a-z0-9_]', '_', composer['name'])
+        module_repository = os.getcwd() + '/'
 
     with cd(BASIC_PATH):
         f = open('auth.json.sample')
@@ -79,8 +80,10 @@ def install(path):
 
         if ec1 or ec2:
             raise click.ClickException("Failed to install extension")
+    result_path = BASIC_PATH / 'vendor' / composer['name']
+    os.system('cp ' + module_repository + ' ' + str(result_path))
 
-    return BASIC_PATH / 'vendor' / composer['name']
+    return result_path
 
 
 
