@@ -81,7 +81,7 @@ def install(path):
         if ec1 or ec2:
             raise click.ClickException("Failed to install extension")
     result_path = BASIC_PATH / 'vendor' / composer['name']
-    os.system('cp ' + module_repository + ' ' + str(result_path))
+    os.system('cp -r' + module_repository + '/. ' + str(result_path))
 
     return result_path
 
