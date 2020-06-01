@@ -7,11 +7,11 @@ def removeDeployPipeline():
     readFile = open("bitbucket-pipelines.yml")
     lines = readFile.readlines()
     readFile.close()
-    firstInstructionIndex = lines.index('    - step: &deployPipelines') - 1
-    lastInstructionIndex = lines.index('          - python3 /deploypipline.py')
+    firstInstructionIndex = lines.index('- step: &deployPipelines') - 1
+    lastInstructionIndex = lines.index('- python3 /deploypipline.py')
     del lines[firstInstructionIndex:lastInstructionIndex]
-    firstIndex = lines.index('    # copy this file to all modules') - 1
-    lastIndex = lines.index('      - step: *deployPipelines')
+    firstIndex = lines.index('# copy this file to all modules') - 1
+    lastIndex = lines.index('- step: *deployPipelines')
     del lines[firstIndex:lastIndex]
     w = open("bitbucket-pipelines.yml", 'w')
     w.writelines([item for item in lines])
