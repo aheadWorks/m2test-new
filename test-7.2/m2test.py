@@ -59,7 +59,7 @@ def install(path):
     with open(path / 'composer.json') as f:
         composer = json.load(f)
         repo_name = re.sub(r'[^a-z0-9_]', '_', composer['name'])
-        module_repository = os.getcwd() + '/.'
+        module_repository = os.getcwd() + '/*'
 
     with cd(BASIC_PATH):
         f = open('auth.json.sample')
@@ -165,13 +165,8 @@ def static(report, path, report_path):
 
     path = install(path)
 
-    di_compile()
-
     proc = subprocess.Popen(['php', '/var/www/html/bin/magento', 'setup:static-content:deploy', '-f'])
     proc.communicate()
-    ec = proc.returncode
-    if ec:
-        raise click.ClickException("Failed to static-content:deploy")
 
     with open(path / 'composer.json') as f:
         composer = json.load(f)
