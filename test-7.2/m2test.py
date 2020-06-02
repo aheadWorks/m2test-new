@@ -6,7 +6,6 @@ import os
 import re
 import json
 import pathlib
-import shutil
 
 
 BASIC_PATH = pathlib.Path(os.environ.get('MAGENTO_ROOT', '/var/www/html'))
@@ -56,8 +55,6 @@ def install(path):
     repo_type = 'path'
 
     click.echo("Installing from %s" % path)
-
-    module_path = os.getcwd()
 
     with open(path / 'composer.json') as f:
         composer = json.load(f)

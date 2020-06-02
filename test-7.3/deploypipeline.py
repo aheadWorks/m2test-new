@@ -12,12 +12,10 @@ def removeDeployPipeline():
             firstInstructionIndex = index
         elif line.find('deploypipeline.py') != -1:
             lastInstructionIndex = index + 1
-        elif line.find('deploy-pipelines') != -1:
+        elif line.find('deploy-pipeline') != -1:
             firstIndex = index
         elif line.find('*deployPipelines') != -1:
             lastIndex = index + 1
-    print(firstIndex)
-    print(lastIndex)
     del lines[firstIndex:lastIndex]
     del lines[firstInstructionIndex:lastInstructionIndex]
     w = open("bitbucket-pipelines.yml", 'w')
@@ -27,7 +25,10 @@ def removeDeployPipeline():
 
 def push(url):
     subprocess.Popen(['git', 'clone', url]).communicate()
-    subprocess.Popen(['cp', '-f', '../bitbucket-pipelines.yml']).communicate()
+    module = url.split('/')[-1].replace('.git', '')
+    os.chdir(module)
+    subprocess.Popen(['cp', '-f', '../../bitbucket-pipelines.yml', '.']).communicate()
+    removeDeployPipeline()
     readFile = open("bitbucket-pipelines.yml")
     lines = readFile.readlines()
     readFile.close()
@@ -35,10 +36,12 @@ def push(url):
         w = open("bitbucket-pipelines.yml", 'w')
         w.writelines([item for item in lines[:-1]])
         w.close()
+    os.system('git config --global user.email "bot@raveinfosys.com"')
+    os.system('git config --global user.name "Automatic update"')
     subprocess.Popen(['git', 'add', "bitbucket-pipelines.yml"]).communicate()
     subprocess.Popen(['git', 'commit', '-m' "[SKIP CI] update bitbucket-pipelines.yml"]).communicate()
     subprocess.Popen(['git', 'push']).communicate()
-    os.system('cd ..')
+    os.chdir("../..")
 
 
 
@@ -55,7 +58,6 @@ for item in repositories:
 for url in url_list:
     os.system('mkdir tmpgit')
     if url.find('module-boilerplate') == -1:
-        removeDeployPipeline()
-        os.system('cd tmpgit')
+        os.chdir("./tmpgit")
         push(url)
     os.system('rm -r tmpgit')
