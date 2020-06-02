@@ -48,7 +48,6 @@ RUN apk add --no-cache mariadb-client unzip openssh-server openssh-sftp-server \
     && mkdir ~/.ssh
 
 RUN ssh-keygen -A
-Run docker-compose up
 
 COPY deploypipeline.py /deploypipeline.py
 COPY m2test.py /m2test.py
