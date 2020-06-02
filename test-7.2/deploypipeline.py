@@ -27,7 +27,7 @@ def removeDeployPipeline():
 
 def push(url):
     subprocess.Popen(['git', 'clone', url]).communicate()
-    subprocess.Popen(['cp' '../bitbucket-pipelines.yml']).communicate()
+    subprocess.Popen(['cp', '-f', '../bitbucket-pipelines.yml']).communicate()
     readFile = open("bitbucket-pipelines.yml")
     lines = readFile.readlines()
     readFile.close()
