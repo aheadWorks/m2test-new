@@ -6,6 +6,7 @@ import os
 import re
 import json
 import pathlib
+import shutil
 
 
 BASIC_PATH = pathlib.Path(os.environ.get('MAGENTO_ROOT', '/var/www/html'))
@@ -56,10 +57,11 @@ def install(path):
 
     click.echo("Installing from %s" % path)
 
+    module_path = os.getcwd()
+
     with open(path / 'composer.json') as f:
         composer = json.load(f)
         repo_name = re.sub(r'[^a-z0-9_]', '_', composer['name'])
-        module_repository = os.getcwd() + '/*'
 
     with cd(BASIC_PATH):
         f = open('auth.json.sample')
@@ -81,7 +83,6 @@ def install(path):
         if ec1 or ec2:
             raise click.ClickException("Failed to install extension")
     result_path = BASIC_PATH / 'vendor' / composer['name']
-    os.system('cp -r ' + module_repository + ' ' + str(result_path))
 
     return result_path
 
