@@ -24,7 +24,8 @@ def removeDeployPipeline():
 
 
 def push(url):
-    subprocess.Popen(['git', 'clone', url]).communicate()
+    subprocess.Popen(['git', 'clone', url, '-b', 'develop']).communicate()
+    subprocess.Popen(['ls', '-la']).communicate()
     module = url.split('/')[-1].replace('.git', '')
     os.chdir(module)
     subprocess.Popen(['cp', '-f', '../../bitbucket-pipelines.yml', '.']).communicate()
@@ -50,8 +51,12 @@ f = open('repositories')
 repositories = json.load(f)
 f.close()
 repositories = repositories['values']
+f = open('repositories2')
+repositories2 = json.load(f)
+f.close()
+repositories2 = repositories2['values']
 url_list = list()
-for item in repositories:
+for item in repositories + repositories2:
     url = item['links']['clone'][1]['href']
     if url.find('module') != -1:
         url_list.append(url)
