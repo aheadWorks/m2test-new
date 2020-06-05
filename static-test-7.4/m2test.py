@@ -161,17 +161,18 @@ def static(report, path, report_path):
 
     path = pathlib.Path(path)
 
-    path = install(path)
+    phpcs_report_file = path / 'test-results' / 'test-phpcs.xml'
 
-    proc = subprocess.Popen(['php', '/var/www/html/bin/magento', 'setup:static-content:deploy', '-f'])
-    proc.communicate()
+    path = install(path)
 
     with open(path / 'composer.json') as f:
         composer = json.load(f)
 
     path_changed_files = BASIC_PATH / 'dev' / 'tests' / 'static' / 'testsuite' / 'Magento' / 'Test' / 'Php' / '_files' / 'whitelist' / 'common.txt'
+    path_blacklist = BASIC_PATH / 'dev' / 'tests' / 'static' / 'testsuite' / 'Magento' / 'Test' / 'Php' / '_files' / 'phpcpd' / 'blacklist' / 'common.txt'
 
-    options = [os.path.join(BASIC_PATH, 'vendor/bin/phpunit'), '--configuration', BASIC_PATH / 'dev/tests/static/phpunit.xml.dist']
+    options = [os.path.join(BASIC_PATH, 'vendor/bin/phpunit'), '--configuration',
+               BASIC_PATH / 'dev/tests/static/phpunit.xml.dist']
 
     output_base = report_path or os.environ.get('RESULTS_DIR', '/results')
 
@@ -186,21 +187,38 @@ def static(report, path, report_path):
                 pass
 
     # Collect php iles
+    f = open(path_blacklist, 'r')
+    lines = f.readlines()
+    f.close()
+    lines.append('setup\n')
+    lines.append('update\n')
+    print(lines)
+    with open(path_blacklist, 'w') as fp:
+        fp.writelines(lines)
+    f = open(path_changed_files, 'r')
+    lines = f.readlines()
+    f.close()
+    lines = lines[0:2]
     with open(path_changed_files, 'w') as fp:
+        fp.writelines(lines)
         for root, dirs, files in os.walk(path):
-
-            fp.writelines([os.path.relpath(os.path.abspath(os.path.join(root, f)), BASIC_PATH) + '\n' for f in files if os.path.splitext(f)[1] in (
-                '.php',
-                '.phtml'
-            )])
-
+            fp.writelines([os.path.relpath(os.path.abspath(os.path.join(root, f)), BASIC_PATH) + '\n' for f in files if
+                           os.path.splitext(f)[1] in (
+                               '.php',
+                               '.phtml'
+                           )])
 
     exit_code = 0
+    print(suites.items())
     for fname, name in suites.items():
 
         outfile = os.path.join(output_base, fname + '.xml')
 
         if re.search(re.compile('integrity'), fname):
+            continue
+        if re.search(re.compile('less'), fname):
+            continue
+        if re.search(re.compile('html'), fname):
             continue
 
         args = options + ['--testsuite=%s' % name]
@@ -218,6 +236,22 @@ def static(report, path, report_path):
             f.write(data)
 
         exit_code = proc.returncode or exit_code
+
+    # test code style
+    proc = subprocess.Popen(
+        ['/var/www/html/vendor/bin/phpcs', path, '--standard=Magento2', '--extensions=php,phtml', '--severity=9',
+         '--report=' + report],
+        stdout=subprocess.PIPE
+        )
+    stdout, stderr = proc.communicate()
+
+    if phpcs_report_file:
+        with open(phpcs_report_file, 'wb') as fp:
+            fp.write(stdout)
+    else:
+        click.echo(stdout)
+    if proc.returncode != 0:
+        exit_code = proc.returncode
 
     exit(exit_code)
 
