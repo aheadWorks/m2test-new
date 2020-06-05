@@ -80,7 +80,6 @@ def install(path):
         if ec1 or ec2:
             raise click.ClickException("Failed to install extension")
     result_path = BASIC_PATH / 'vendor' / composer['name']
-    os.system('cat ' + str(result_path) + 'ViewModel/Checkout/Success/Text.php')
     return result_path
 
 
