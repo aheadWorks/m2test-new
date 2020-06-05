@@ -238,7 +238,7 @@ def static(report, path, report_path):
 
     # test code style
     proc = subprocess.Popen(
-        ['/var/www/html/vendor/bin/phpcs', path, '--standard=Magento2', '--extensions=php,phtml', '--severity=9',
+        ['/var/www/html/vendor/bin/phpcs', path, '--standard=Magento2', '--extensions=php,phtml', '--severity=5',
          '--report=' + report],
         stdout=subprocess.PIPE
         )
