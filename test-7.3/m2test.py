@@ -73,6 +73,17 @@ def install(path):
         proc = subprocess.Popen(['composer', 'config', 'repositories.' + repo_name, repo_type, path])
         proc.communicate()
         ec1 = proc.returncode
+        if len(composer["require"] > 0):
+            broken_requires = list()
+            for ext in composer["require"]:
+                if ext.find('aheadworks') != -1:
+                    proc = subprocess.Popen('composer', 'require', ext + ':' + composer["require"][ext])
+                    proc.communicate()
+                    if proc.returncode != 0:
+                        proc = subprocess.Popen(['composer', 'config', 'repositories.magento', 'vcs', 'git@bitbucket.org:$BITBUCKET_WORKSPACE/' + module_name + '.git'])
+                        proc.communicate()
+        with open(path / 'composer.json', 'w') as file:
+            json.dump(composer, file, indent=2)
         proc = subprocess.Popen(['composer', 'require', '--prefer-dist', '{e[name]}:{e[version]}'.format(e=composer)])
         proc.communicate()
         ec2 = proc.returncode

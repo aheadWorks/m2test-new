@@ -19,7 +19,7 @@ head = """#
 files_to_copy = ("m2test.py", "deploypipeline.py", "entrypoint.sh", "hooks", "assets", "patch", "docker-compose.yml")
 
 magento_versions = {
-    "static-test": {
+    "test-devops": {
         "exact_version": "2.3.4",
         "php_versions": ["7.4", "7.3", "7.2", "7.1"],
         "copy": files_to_copy
