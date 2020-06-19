@@ -61,6 +61,7 @@ def install(path):
         repo_name = re.sub(r'[^a-z0-9_]', '_', composer['name'])
 
     with cd(BASIC_PATH):
+        os.system('apk add git')
         f = open('auth.json.sample')
         composer_auth = json.load(f)
         f.close()
@@ -72,6 +73,24 @@ def install(path):
         os.system('composer config repositories.magento composer https://repo.magento.com/')
         proc = subprocess.Popen(['composer', 'config', 'repositories.' + repo_name, repo_type, path])
         proc.communicate()
+        if len(composer["require"]) > 0:
+            for ext in composer["require"]:
+                if ext.find('aheadworks') != -1:
+                    proc = subprocess.Popen(['composer', 'require', str(ext + ':' + composer["require"][ext])])
+                    proc.communicate()
+                    if proc.returncode != 0:
+                        module_name = ext.split('/')[1]
+                        proc = subprocess.Popen(['composer', 'config', 'repositories.aheadworks', 'vcs',
+                                                 'git@bitbucket.org:awm2ext/' + module_name + '.git'])
+                        proc.communicate()
+                        proc = subprocess.Popen(['composer', 'require', str(ext + ': ' + composer["require"][ext])])
+                        proc.communicate()
+                        if proc.returncode != 0:
+                            proc = subprocess.Popen(
+                                ['git', 'clone', '-b', 'develop', 'git@bitbucket.org:awm2ext/' + module_name + '.git',
+                                 '/' + module_name])
+                            proc = subprocess.Popen(
+                                ['composer', 'config', 'repositories.aheadworks', 'path', '/' + module_name])
         ec1 = proc.returncode
         proc = subprocess.Popen(['composer', 'require', '--prefer-dist', '{e[name]}:{e[version]}'.format(e=composer)])
         proc.communicate()
