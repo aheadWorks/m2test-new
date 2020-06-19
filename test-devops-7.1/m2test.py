@@ -7,12 +7,12 @@ import re
 import json
 import pathlib
 
+
 BASIC_PATH = pathlib.Path(os.environ.get('MAGENTO_ROOT', '/var/www/html'))
 
 
 class cd:
     """Context manager for changing the current working directory"""
-
     def __init__(self, newPath):
         self.newPath = os.path.expanduser(newPath)
 
@@ -40,9 +40,12 @@ def di_compile():
     proc = subprocess.Popen(['php', '/var/www/html/bin/magento', 'setup:di:compile'])
     proc.communicate()
     ec4 = proc.returncode
-
+    
     if ec3 or ec4:
         raise click.ClickException("Failed to di:compile")
+    
+
+
 
 
 def install(path):
@@ -66,36 +69,19 @@ def install(path):
         os.system('touch auth.json')
         with open('auth.json', 'w') as file:
             json.dump(composer_auth, file, indent=2)
-        os.system('apk add git')
         os.system('composer config repositories.magento composer https://repo.magento.com/')
         proc = subprocess.Popen(['composer', 'config', 'repositories.' + repo_name, repo_type, path])
         proc.communicate()
         ec1 = proc.returncode
-        if len(composer["require"]) > 0:
-            for ext in composer["require"]:
-                if ext.find('aheadworks') != -1:
-                    proc = subprocess.Popen(['composer', 'require', str(ext + ':' + composer["require"][ext])])
-                    proc.communicate()
-                    if proc.returncode != 0:
-                        module_name = ext.split('/')[1]
-                        proc = subprocess.Popen(['composer', 'config', 'repositories.aheadworks', 'vcs',
-                                                 'git@bitbucket.org:awm2ext/' + module_name + '.git'])
-                        proc.communicate()
-                        proc = subprocess.Popen(['composer', 'require', str(ext + ': ' + composer["require"][ext])])
-                        proc.communicate()
-                        if proc.returncode != 0:
-                            proc = subprocess.Popen(
-                                ['git', 'clone', '-b', 'develop', 'git@bitbucket.org:awm2ext/' + module_name + '.git',
-                                 '/' + module_name])
-                            proc = subprocess.Popen(
-                                ['composer', 'config', 'repositories.aheadworks', 'path', '/' + module_name])
         proc = subprocess.Popen(['composer', 'require', '--prefer-dist', '{e[name]}:{e[version]}'.format(e=composer)])
         proc.communicate()
         ec2 = proc.returncode
+
         if ec1 or ec2:
             raise click.ClickException("Failed to install extension")
     result_path = BASIC_PATH / 'vendor' / composer['name']
     return result_path
+
 
 
 @click.group()
@@ -108,17 +94,16 @@ def cli():
 @cli.command()
 @click.option('--severity', default=10, help='Severity level.')
 @click.option('--report', default="junit", help='Report type.', type=click.Choice(["full", "xml", "checkstyle", "csv",
-                                                                                   "json", "junit", "emacs", "source",
-                                                                                   "summary", "diff", "svnblame",
-                                                                                   "gitblame",
-                                                                                   "hgblame", "notifysend"]))
+                                                                             "json", "junit", "emacs", "source",
+                                                                             "summary", "diff", "svnblame", "gitblame",
+                                                                             "hgblame", "notifysend"]))
 @click.argument('path', type=click.Path(exists=True))
 @click.argument('report_file', type=click.Path(), required=False)
 def eqp(severity, report, path, report_file):
     """Run EQP tests for path"""
 
     proc = subprocess.Popen([_('/magento-coding-standard', 'vendor/bin/phpcs'), path, '--standard=Magento2',
-                             '--severity=' + str(severity), '--extensions=php,phtml', '--report=' + report],
+                             '--severity='+str(severity), '--extensions=php,phtml', '--report='+report],
                             stdout=subprocess.PIPE
                             )
     stdout, stderr = proc.communicate()
@@ -144,7 +129,7 @@ def unit(report, path, report_file):
 
     options = [
         _(BASIC_PATH, 'vendor/bin/phpunit'),
-        '--configuration', _(BASIC_PATH, 'dev/tests/unit/phpunit.xml.dist')
+        '--configuration',  _(BASIC_PATH, 'dev/tests/unit/phpunit.xml.dist')
     ]
 
     if report_file:
@@ -157,6 +142,7 @@ def unit(report, path, report_file):
         exit(proc.returncode)
 
     exit(proc.returncode)
+
 
 
 @cli.command()
@@ -255,7 +241,7 @@ def static(report, path, report_path):
         ['/var/www/html/vendor/bin/phpcs', path, '--standard=Magento2', '--extensions=php,phtml', '--severity=5',
          '--report=' + report],
         stdout=subprocess.PIPE
-    )
+        )
     stdout, stderr = proc.communicate()
 
     if phpcs_report_file:
@@ -268,7 +254,6 @@ def static(report, path, report_path):
 
     exit(exit_code)
 
-
 @cli.command()
 @click.argument('path', type=click.Path(exists=True))
 def validate_m2_package(path):
@@ -277,10 +262,9 @@ def validate_m2_package(path):
     :param path:
     :return:
     """
-    # proc = subprocess.Popen(['php', '-f', '/usr/local/bin/validate_m2_package.php', path])
-    # proc.communicate()
-    # exit(proc.returncode)
-
+    #proc = subprocess.Popen(['php', '-f', '/usr/local/bin/validate_m2_package.php', path])
+    #proc.communicate()
+    #exit(proc.returncode)
 
 if __name__ == '__main__':
     cli()

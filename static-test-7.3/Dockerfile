@@ -55,10 +55,44 @@ RUN apk add --no-cache mariadb-client unzip openssh-server openssh-sftp-server \
 RUN ssh-keygen -A
 
 
+
+RUN echo "http://dl-4.alpinelinux.org/alpine/v3.4/main" >> /etc/apk/repositories && \
+	echo "http://dl-4.alpinelinux.org/alpine/v3.4/community" >> /etc/apk/repositories
+RUN apk update
+
+RUN apk add --update \
+  openjdk11 \
+  nodejs \
+  nodejs-npm \
+  curl \
+  sudo
+
+RUN node --version
+RUN npm --version
+
+RUN addgroup -g 1000 node \
+    && adduser -u 1000 -G node -s /bin/sh -D node
+RUN echo 'node ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+WORKDIR /home/node
+COPY package.json .
+RUN mkdir node_modules
+RUN chown node:node -R .
+RUN chmod 777 -R .
+
+RUN ls -al .
+
+USER node
+RUN npm install
+RUN ls -al ./node_modules/selenium-standalone/
+RUN ls -al ./node_modules/selenium-standalone/.selenium
+
+
 COPY assets/nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY assets/entrypoint.py /entrypoint.py
 
+USER root
 ENTRYPOINT ["/usr/bin/python3", "/entrypoint.py"]
 CMD ["update_and_serve"]
 

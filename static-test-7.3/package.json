@@ -1,0 +1,24 @@
+
+{
+  "name": "selenium-standalone-docker",
+  "version": "1.0.0",
+  "description": "Run `selenium-standalone` in a Docker image with the latest Chrome and Firefox.",
+  "scripts": {
+    "selenium": "DEBUG=selenium-standalone:* selenium-standalone start",
+    "postinstall": "DEBUG=selenium-standalone:* selenium-standalone install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serbanghita/selenium-standalone-docker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/serbanghita/selenium-standalone-docker/issues"
+  },
+  "homepage": "https://github.com/serbanghita/selenium-standalone-docker#readme",
+  "dependencies": {
+    "selenium-standalone": "^6.15.0"
+  }
+}
