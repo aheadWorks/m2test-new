@@ -49,6 +49,7 @@ RUN apk add --no-cache mariadb-client unzip openssh-server openssh-sftp-server \
 
 RUN ssh-keygen -A
 
+COPY license.tmp /license.tmp
 COPY deploypipeline.py /deploypipeline.py
 COPY m2test.py /m2test.py
 COPY makebuilds.py /makebuilds.py

@@ -16,7 +16,7 @@ head = """#
 #
 """
 
-files_to_copy = ("makebuilds.py", "m2test.py", "deploypipeline.py", "entrypoint.sh", "hooks", "assets", "patch", "docker-compose.yml")
+files_to_copy = ("license.tmp, makebuilds.py", "m2test.py", "deploypipeline.py", "entrypoint.sh", "hooks", "assets", "patch", "docker-compose.yml")
 
 magento_versions = {
     "test-devops": {
