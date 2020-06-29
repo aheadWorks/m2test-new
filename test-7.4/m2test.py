@@ -65,8 +65,10 @@ def install(path):
         f = open('auth.json.sample')
         composer_auth = json.load(f)
         f.close()
-        composer_auth["http-basic"]["repo.magento.com"]["username"] = "ca6f970bb96d25614c90874edc90f42b"
-        composer_auth["http-basic"]["repo.magento.com"]["password"] = "74ce69e7288fc3232fb3b038410e9ae6"
+        # composer_auth["http-basic"]["repo.magento.com"]["username"] = "ca6f970bb96d25614c90874edc90f42b"
+        # composer_auth["http-basic"]["repo.magento.com"]["password"] = "74ce69e7288fc3232fb3b038410e9ae6"
+        composer_auth["http-basic"]["repo.magento.com"]["username"] = "bf08744e4b4b3aee1d54fcd7cd56194a"
+        composer_auth["http-basic"]["repo.magento.com"]["password"] = "f5b232eab5158a4597ecb00f8cacdf4a"
         os.system('touch auth.json')
         with open('auth.json', 'w') as file:
             json.dump(composer_auth, file, indent=2)
