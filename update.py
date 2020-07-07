@@ -27,6 +27,7 @@ magento_versions = {
     "test": {
         "exact_version": "2.3.4",
         "php_versions": ["7.4", "7.3", "7.2", "7.1"],
+
         "copy": files_to_copy
     }
 }

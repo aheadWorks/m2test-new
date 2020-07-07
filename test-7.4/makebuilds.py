@@ -101,9 +101,9 @@ def ecommerce_build():
     os.system('apk add zip')
     cd('../../..')
     os.system('echo $BB_AUTH_STRING')
-    os.system('zip -r aw_m2_' + result_name + '.community-editon.zip app')
+    os.system('zip -r aw_m2_' + result_name + '.community_edition.zip app')
     ce = '"aw_m2_' + result_name + '.community-editon.zip"'
-    os.system('zip -r aw_m2_' + result_name + '.enterprise-editon.zip app')
+    os.system('zip -r aw_m2_' + result_name + '.enterprise_edition.zip app')
     ee = '"aw_m2_' + result_name + '.enterprise-editon.zip"'
     os.system(
         'curl -X POST "https://sednevIgor:KwkCyHNdwBHshNGtqtuy@' + request.strip() + '" ' + '--form files=@"' + ce + '"')
