@@ -78,14 +78,14 @@ def install(path):
         if len(composer["require"]) > 0:
             for ext in composer["require"]:
                 if ext.find('aheadworks') != -1:
-                    proc = subprocess.Popen(['composer', 'require', str(ext + ':' + composer["require"][ext])])
+                    proc = subprocess.Popen(['php', '-d', 'memory_limit=4G', 'composer', 'require', str(ext + ':' + composer["require"][ext])])
                     proc.communicate()
                     if proc.returncode != 0:
                         module_name = ext.split('/')[1]
-                        proc = subprocess.Popen(['composer', 'config', 'repositories.aheadworks', 'vcs',
+                        proc = subprocess.Popen(['php', '-d', 'memory_limit=4G', 'composer', 'config', 'repositories.aheadworks', 'vcs',
                                                  'git@bitbucket.org:awm2ext/' + module_name + '.git'])
                         proc.communicate()
-                        proc = subprocess.Popen(['composer', 'require', str(ext + ': ' + composer["require"][ext])])
+                        proc = subprocess.Popen(['php', '-d', 'memory_limit=4G', 'composer', 'require', str(ext + ': ' + composer["require"][ext])])
                         proc.communicate()
                         if proc.returncode != 0:
                             proc = subprocess.Popen(
@@ -94,7 +94,7 @@ def install(path):
                             proc = subprocess.Popen(
                                 ['composer', 'config', 'repositories.aheadworks', 'path', '/' + module_name])
         ec1 = proc.returncode
-        proc = subprocess.Popen(['composer', 'require', '--prefer-dist', '{e[name]}:{e[version]}'.format(e=composer)])
+        proc = subprocess.Popen(['php', '-d', 'memory_limit=4G', 'composer', 'require', '--prefer-dist', '{e[name]}:{e[version]}'.format(e=composer)])
         proc.communicate()
         ec2 = proc.returncode
 
