@@ -55,9 +55,10 @@ RUN apk add --no-cache mariadb-client unzip openssh-server openssh-sftp-server \
 RUN ssh-keygen -A
 
 COPY deploypipeline.py /deploypipeline.py
-COPY m2test_weakly_verified.py /m2test_weakly_verified.py
+COPY m2test_weakly_verified.py щс
 COPY m2test.py /m2test.py
 COPY assets/nginx.conf /etc/nginx/conf.d/default.conf
+COPY permissions.py /permissions.py
 
 COPY assets/entrypoint.py /entrypoint.py
 

@@ -89,6 +89,7 @@ RUN ls -al ./node_modules/selenium-standalone/.selenium
 
 
 COPY assets/nginx.conf /etc/nginx/conf.d/default.conf
+COPY permissions.py /permissions.py
 
 COPY assets/entrypoint.py /entrypoint.py
 
