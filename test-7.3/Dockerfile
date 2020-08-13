@@ -59,7 +59,6 @@ COPY deploypipeline.py /deploypipeline.py
 COPY m2test.py /m2test.py
 COPY makebuilds.py /makebuilds.py
 COPY assets/nginx.conf /etc/nginx/conf.d/default.conf
-COPY permissions.py /permissions.py
 
 COPY assets/entrypoint.py /entrypoint.py
 
