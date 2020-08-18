@@ -60,7 +60,7 @@ def ecommerce_build():
         request = r.readlines()[0]
     with open('./composer.json') as f:
         composer = json.load(f)
-    with open("/license.tmp") as t:
+    with open("license.tmp") as t:
         license_template = t.readlines()
     list_of_modules = list()
     core_module_name = composer['name']
@@ -96,15 +96,23 @@ def ecommerce_build():
                 if line.find("headworks_") != -1:
                     module_directory_name = line.strip('\"\'').split('_')[1][0:-3]
             if core_module_name.split('/')[1] == module:
+                marketplace_name = core_module_name.split('/')[1]
+                core_module_directory_name = module_directory_name
                 result_name = module_directory_name + '-' + composer['version']
             os.system('mv ' + module + ' ' + module_directory_name)
     os.system('apk add zip')
+    with cd('app/code/Aheadworks/' + core_module_directory_name):
+        os.system('zip -r ' + marketplace_name + '.zip ' + './')
+        os.system(
+            'curl -X POST "https://sednevIgor:KwkCyHNdwBHshNGtqtuy@' + request.strip() + '" ' + '--form files=@"' + marketplace_name + '.zip"')
+        os.system('rm ' + marketplace_name + '.zip')
     cd('../../..')
+    os.system('pwd')
     os.system('echo $BB_AUTH_STRING')
-    os.system('zip -r aw_m2_' + result_name + '.community_edition.zip app')
-    ce = '"aw_m2_' + result_name + '.community_edition.zip"'
-    os.system('zip -r aw_m2_' + result_name + '.enterprise_edition.zip app')
-    ee = '"aw_m2_' + result_name + '.enterprise_edition.zip"'
+    os.system('zip -r aw_m2_' + result_name + '.community-edition.zip app')
+    ce = '"aw_m2_' + result_name + '.community-edition.zip"'
+    os.system('zip -r aw_m2_' + result_name + '.enterprise-edition.zip app')
+    ee = '"aw_m2_' + result_name + '.enterprise-edition.zip"'
     os.system(
         'curl -X POST "https://sednevIgor:KwkCyHNdwBHshNGtqtuy@' + request.strip() + '" ' + '--form files=@"' + ce + '"')
     os.system(
